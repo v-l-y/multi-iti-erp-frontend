@@ -26,9 +26,8 @@ jobs:
         run: npm install --no-audit --no-fund
       - name: Build Vue frontend
         env:
-          GITHUB_PAGES: 'true'
           VITE_GITHUB_PAGES: 'true'
-        run: npm run build
+        run: npm run build -- --mode github-pages
       - name: Upload GitHub Pages artifact
         uses: actions/upload-pages-artifact@v3
         with:
