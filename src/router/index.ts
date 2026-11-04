@@ -1,8 +1,11 @@
-import { createRouter, createWebHistory } from 'vue-router'
+import { createRouter, createWebHashHistory, createWebHistory } from 'vue-router'
 import { useAuthStore } from '../stores/auth'
 
 const router = createRouter({
-  history: createWebHistory(),
+  // GitHub Pages has no SPA rewrite support; hash routing keeps deep links accessible.
+  history: import.meta.env.VITE_GITHUB_PAGES === 'true'
+    ? createWebHashHistory(import.meta.env.BASE_URL)
+    : createWebHistory(import.meta.env.BASE_URL),
   routes: [
     { path: '/login', name: 'login', component: () => import('../views/LoginView.vue'), meta: { public: true } },
     { path: '/institute-select', name: 'institute-select', component: () => import('../views/InstituteSelectView.vue') },

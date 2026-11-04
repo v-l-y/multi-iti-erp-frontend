@@ -37,3 +37,15 @@ CORS, session cookies and CSRF origin policy must be configured at the backend. 
 
 ## Remaining work
 Canonical onboarding/setup, curriculum/calendar/principal modules, institute management, trade units, ITSU, batches, admissions, staff, academics, fees, documents, inventory, reporting, accessibility, tests and complete integrated role journeys. All implementation must be driven by real backend contracts and the blueprint; no fabricated API fields or permissions.
+
+## Browse on GitHub Pages
+
+The repository contains a GitHub Actions workflow at `.github/workflows/deploy-pages.yml` which builds the existing Vue application and publishes the `dist` folder to GitHub Pages.
+
+1. Open **Settings → Pages** on this repository and select **GitHub Actions** as the build/deployment source. (The workflow cannot change repository-level Pages settings.)
+2. In **Actions**, check the **Deploy frontend to GitHub Pages** workflow. Run it manually with **Run workflow** if no run was started automatically.
+3. After a successful deployment, open **https://v-l-y.github.io/multi-iti-erp-frontend/**. The login route uses `#/login` so refreshes work on static hosting.
+
+The workflow sets `GITHUB_PAGES=true` and `VITE_GITHUB_PAGES=true` during the build. It uses the Vite base `/multi-iti-erp-frontend/` and hash-based routing **only** for Pages; local development keeps history routing.
+
+**Important:** GitHub Pages hosts static frontend assets only. The default API URL `/` will not provide the PHP/MySQL ERP backend on GitHub Pages. To use real login or ERP data, deploy the compatible HTTPS backend independently, configure its exact allowed frontend origin, CORS/CSRF and session-cookie policy, and set the public build-time variable `VITE_API_BASE_URL` to its HTTPS origin. The existing backend's same-site cookie requirements may prevent cross-site session authentication from `github.io`; do not weaken cookie or origin security settings to bypass that restriction. Without compatible backend deployment, this is a frontend shell, not a working ERP.
