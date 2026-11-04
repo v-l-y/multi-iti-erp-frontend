@@ -14,7 +14,9 @@ Standalone Vue 3 + TypeScript + Vite frontend for the Bihar private ITI institut
 - Cookies with credentials, CSRF on state-changing requests; no token storage in localStorage.
 - Platform/regulatory role routing separated from institute workspace.
 - Institute selection limited to institute memberships received from the session.
+- Responsive shared workspace shell, accessible skip navigation, sidebar, role-specific landing pages, and explicit unimplemented-module placeholders.
 - Initial dashboard and Regulatory Admin landing pages (functional modules not yet integrated).
+- Re-entrant session initialization protection and institute-switch action.
 
 The server remains responsible for enforcing roles, institute isolation, authorization and request validity. Route guards alone are not security controls.
 
@@ -34,6 +36,11 @@ VITE_API_BASE_URL=http://localhost:8000
 CORS, session cookies and CSRF origin policy must be configured at the backend. This setting is public browser configuration, not a secret.
 
 **Verification status:** Github source changes were checked after upload, but dependency installation, TypeScript compilation, production build, browser journeys and live backend integration have not yet been executed.
+
+## Quality gates
+
+- A local build/test run is **still required**. The current execution environment cannot reach GitHub or the npm registry to install dependencies, so compilation and browser testing are not claimed as passing.
+- Once checkout is available, run `npm install`, `npm run build`, and verify login, logout, session expiration, institute selection, role boundaries, and responsive keyboard navigation against the real backend.
 
 ## Remaining work
 Canonical onboarding/setup, curriculum/calendar/principal modules, institute management, trade units, ITSU, batches, admissions, staff, academics, fees, documents, inventory, reporting, accessibility, tests and complete integrated role journeys. All implementation must be driven by real backend contracts and the blueprint; no fabricated API fields or permissions.
