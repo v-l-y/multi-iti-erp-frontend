@@ -1,22 +1,17 @@
 <script setup lang="ts">
+import { computed } from 'vue'
 import { useAuthStore } from '../stores/auth'
-import { useRouter } from 'vue-router'
+import WorkspaceLayout from '../layouts/WorkspaceLayout.vue'
+import FeaturePlaceholder from '../components/FeaturePlaceholder.vue'
+
 const auth = useAuthStore()
-const router = useRouter()
-async function signOut() { await auth.logout(); await router.replace('/login') }
+const instituteName = computed(() => auth.currentInstitute?.institute_name ?? 'Institute')
 </script>
 
 <template>
-  <main class="center">
-    <section class="panel wide">
-      <p class="eyebrow">Institute workspace</p>
-      <h1>{{ auth.currentInstitute?.institute_name }}</h1>
-      <p>Welcome, {{ auth.user?.display_name }}.</p>
-      <p role="status">Academic and administrative modules will appear here after their verified API contracts and permissions are implemented.</p>
-      <div class="actions">
-        <button class="secondary" @click="auth.currentInstitute = null; router.replace('/institute-select')">Change institute</button>
-        <button @click="signOut">Sign out</button>
-      </div>
-    </section>
-  </main>
+  <WorkspaceLayout :title="instituteName" area="institute">
+    <div class="page-heading"><p class="eyebrow">Institute overview</p><h1>{{ instituteName }}</h1><p>Welcome, {{ auth.user?.display_name }}. Your institute workspace is selected.</p></div>
+    <div class="status-row"><span class="status-label">Workspace status</span><strong>{{ auth.currentInstitute?.workspace_state?.replaceAll('_', ' ') }}</strong></div>
+    <FeaturePlaceholder heading="Academic workspace" description="Trade Units, ITSU, batches, admissions and academic execution will be added here using the approved frontend and API contracts." />
+  </WorkspaceLayout>
 </template>
