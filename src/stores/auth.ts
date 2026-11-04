@@ -8,6 +8,7 @@ export const useAuthStore = defineStore('auth', () => {
   const currentInstitute = ref<InstituteContext | null>(null)
   const initialized = ref(false)
   const authenticated = computed(() => user.value !== null)
+  let pendingInitialize: Promise<void> | null = null
 
   function clear() {
     user.value = null
@@ -22,20 +23,25 @@ export const useAuthStore = defineStore('auth', () => {
     if (!institutes.value.some(i => i.id === currentInstitute.value?.id)) currentInstitute.value = null
   }
   function hasRole(role: string) { return user.value?.platform_roles.includes(role) ?? false }
+  function clearInstitute() { currentInstitute.value = null }
   function selectInstitute(id: number) {
-    // IDs must come from server-asserted session membership.
     const match = institutes.value.find(i => i.id === id)
     if (!match) throw new Error('Institute is not available in the current session')
     currentInstitute.value = match
   }
-  async function initialize() {
-    if (initialized.value) return
-    clear()
-    try { accept(await api.session()) }
-    catch { clear() }
-    finally { initialized.value = true }
+  function initialize(): Promise<void> {
+    if (initialized.value) return Promise.resolve()
+    if (pendingInitialize) return pendingInitialize
+    pendingInitialize = (async () => {
+      clear()
+      try { accept(await api.session()) }
+      catch { clear() }
+      finally { initialized.value = true }
+    })().finally(() => { pendingInitialize = null })
+    return pendingInitialize
   }
   async function login(email: string, password: string) {
+    await initialize()
     clear()
     accept(await api.login(email, password))
     initialized.value = true
@@ -45,5 +51,5 @@ export const useAuthStore = defineStore('auth', () => {
     finally { clear(); initialized.value = true }
   }
   api.onUnauthorized = clear
-  return { user, institutes, currentInstitute, initialized, authenticated, hasRole, selectInstitute, initialize, login, logout }
+  return { user, institutes, currentInstitute, initialized, authenticated, hasRole, clearInstitute, selectInstitute, initialize, login, logout }
 })
