@@ -1,25 +1,39 @@
 # Bihar Private Multi-Institute ITI ERP — Frontend
 
-This is a **standalone frontend repository** for the Bihar Private ITI institute-purpose CTS ERP.
+Standalone Vue 3 + TypeScript + Vite frontend for the Bihar private ITI institute-purpose CTS ERP.
 
-## Current state
+## Requirements and sources
+- Frozen product scope: [docs/bihar-iti-erp-blueprint-v1.0.md](docs/bihar-iti-erp-blueprint-v1.0.md).
+- Confirmed authentication endpoint/response patterns were inspected in the existing [multi-iti-erp frontend](https://github.com/v-l-y/multi-iti-erp/tree/main/frontend).
+- This frontend is **under development**, not a complete or verified ERP. Do not assume unimplemented commands are supported.
 
-- The frozen implementation reference is [docs/bihar-iti-erp-blueprint-v1.0.md](docs/bihar-iti-erp-blueprint-v1.0.md).
-- This repository includes an initial **Vue 3 + TypeScript + Vite** application shell.
-- The backend repository [v-l-y/multi-iti-erp](https://github.com/v-l-y/multi-iti-erp) already has frontend foundation code; inspect and reconcile its established behavior and API contracts before porting features here.
-- Authentication, institute isolation, roles, protected pages, API requests and user journeys **are not implemented here**. The shell is not a production ERP.
+## Current implementation
+- Login against `POST /api/auth/login`.
+- Server-backed session restoration through `GET /api/me`.
+- Logout through `POST /api/auth/logout`.
+- Cookies with credentials, CSRF on state-changing requests; no token storage in localStorage.
+- Platform/regulatory role routing separated from institute workspace.
+- Institute selection limited to institute memberships received from the session.
+- Initial dashboard and Regulatory Admin landing pages (functional modules not yet integrated).
+
+The server remains responsible for enforcing roles, institute isolation, authorization and request validity. Route guards alone are not security controls.
 
 ## Run locally
-
-Requires Node.js 20 or later.
+Requires Node.js 20+ and a compatible backend.
 
 ```bash
 npm install
 npm run dev
+npm run build
 ```
 
-Use `npm run build` for a TypeScript and production-bundle check. These commands have **not** been executed as part of this GitHub-only bootstrap.
+Create a local `.env` (do not commit secrets) if the API is hosted on a different origin:
+```env
+VITE_API_BASE_URL=http://localhost:8000
+```
+CORS, session cookies and CSRF origin policy must be configured at the backend. This setting is public browser configuration, not a secret.
 
-## Implementation rules
+**Verification status:** Github source changes were checked after upload, but dependency installation, TypeScript compilation, production build, browser journeys and live backend integration have not yet been executed.
 
-Only implement institute-purpose data management described in the blueprint. Do not invent government approval/credential issuance, a standalone seat-matrix module or independent DGT trade master. Treat backend authorization and institute isolation as authoritative server-side controls. Validate actual backend command/API contracts before adding any form or workflow. Keep secrets out of frontend source and Git history.
+## Remaining work
+Canonical onboarding/setup, curriculum/calendar/principal modules, institute management, trade units, ITSU, batches, admissions, staff, academics, fees, documents, inventory, reporting, accessibility, tests and complete integrated role journeys. All implementation must be driven by real backend contracts and the blueprint; no fabricated API fields or permissions.
